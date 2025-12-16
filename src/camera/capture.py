@@ -28,16 +28,25 @@ class Camera:
         self.cap = cv2.VideoCapture(self.camera_id)
         return self.cap.isOpened()
 
-    def read_frame(self):
+    def read_frame(self, mirror: bool = True):
         """
         Read a frame from the camera.
+
+        Args:
+            mirror: If True, flip the frame horizontally (like a mirror).
 
         Returns:
             Tuple of (success, frame). Frame is None if read failed.
         """
         if self.cap is None:
             return False, None
-        return self.cap.read()
+
+        success, frame = self.cap.read()
+
+        if success and mirror:
+            frame = cv2.flip(frame, 1)  # 1 = horizontal flip
+
+        return success, frame
 
     def stop(self):
         """Release the camera."""
