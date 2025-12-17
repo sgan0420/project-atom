@@ -214,14 +214,27 @@ class AnimatedRobot(Entity):
 
 def main():
     app = Ursina(title='Project Atom', fullscreen=True, borderless=True)
-    window.color = color.rgb(15, 20, 30)
+    window.color = color.rgb(20, 20, 35)  # Dark blue-gray sky
 
     robot = AnimatedRobot(position=(0, 0, 0), scale=18)
     camera.position = (0, 5, -18)
     camera.rotation_x = 10
 
+    # Lighting
     DirectionalLight().look_at((1, -1, 1))
-    AmbientLight(color=color.rgb(80, 80, 100))
+    AmbientLight(color=color.rgb(60, 60, 80))
+
+    # Arena floor - flat circular platform
+    Entity(model='circle', scale=18, position=(0, -0.1, 0), rotation_x=90,
+           color=color.rgb(35, 40, 50))
+
+    # Inner ring
+    Entity(model='circle', scale=14, position=(0, -0.05, 0), rotation_x=90,
+           color=color.rgb(50, 55, 65))
+
+    # Center highlight
+    Entity(model='circle', scale=8, position=(0, 0, 0), rotation_x=90,
+           color=color.rgb(60, 65, 75))
 
     # Webcam panel setup
     webcam_size = (426, 240)
