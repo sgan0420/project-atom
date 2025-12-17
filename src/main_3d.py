@@ -71,9 +71,12 @@ class GestureController:
                 elif hand_label == "Right":
                     right_gesture = gesture
 
-            # Determine pose from gestures
+            # Map gestures to animations (intuitive mappings)
             if left_gesture == "fist" and right_gesture == "fist":
-                pose = "guard"
+                pose = "taunt"
+            elif left_gesture == "open" and right_gesture == "open":
+                pose = "dance"
+            # Single hand fist = punch that side
             elif left_gesture == "fist":
                 pose = "punch_left"
             elif right_gesture == "fist":
@@ -123,6 +126,9 @@ class AnimatedRobot(Entity):
         self.animation_files = {
             'idle': MODELS_PATH / 'robot-default.glb',
             'dance': MODELS_PATH / 'robot-dance.glb',
+            'punch_left': MODELS_PATH / 'robot-punch-left.glb',
+            'punch_right': MODELS_PATH / 'robot-punch-right.glb',
+            'taunt': MODELS_PATH / 'robot-taunt.glb',
         }
         self.current_animation = None
         self.current_actor = None
@@ -234,7 +240,7 @@ def main():
 
     gesture_controller = GestureController()
     if gesture_controller.start():
-        status_text.text = 'Palm = Dance | Fist = Idle | ESC = Quit'
+        status_text.text = 'Fists=Taunt | Palms=Dance | Fist=Punch'
     else:
         status_text.text = 'Camera error'
         status_text.color = color.red
@@ -246,11 +252,9 @@ def main():
 
         def update(self):
             pose = gesture_controller.get_latest_pose()
-            if pose:
-                new_anim = 'idle' if pose in ('punch_left', 'punch_right', 'guard') else 'dance'
-                if new_anim != self.last_animation:
-                    robot.set_animation(new_anim)
-                    self.last_animation = new_anim
+            if pose and pose != self.last_animation:
+                robot.set_animation(pose)
+                self.last_animation = pose
 
             frame = gesture_controller.get_latest_frame()
             if frame is not None:
@@ -265,12 +269,11 @@ def main():
             if key == 'escape':
                 gesture_controller.stop()
                 application.quit()
-            elif key == '1':
-                robot.set_animation('idle')
-                self.last_animation = 'idle'
-            elif key == '2':
-                robot.set_animation('dance')
-                self.last_animation = 'dance'
+            animations = {'1': 'idle', '2': 'dance', '3': 'punch_left',
+                         '4': 'punch_right', '5': 'taunt'}
+            if key in animations:
+                robot.set_animation(animations[key])
+                self.last_animation = animations[key]
 
     GameController()
     app.run()

@@ -14,7 +14,6 @@ class GestureDetector:
         """Check if all fingers are curled (fist)."""
         if not landmarks or len(landmarks) < 21:
             return False
-        # Finger curled = tip below PIP joint (higher y value)
         return all(
             landmarks[tip][1] > landmarks[pip][1]
             for tip, pip in [
@@ -29,7 +28,6 @@ class GestureDetector:
         """Check if all fingers are extended (open palm)."""
         if not landmarks or len(landmarks) < 21:
             return False
-        # Finger extended = tip above PIP joint (lower y value)
         return all(
             landmarks[tip][1] < landmarks[pip][1]
             for tip, pip in [
