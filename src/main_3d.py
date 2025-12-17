@@ -266,7 +266,6 @@ def main():
             frame = gesture_controller.get_latest_frame()
             if frame is not None:
                 frame = cv2.resize(frame, webcam_size)
-                frame = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
                 frame = cv2.flip(frame, 0)
                 webcam_tex.setRamImage(frame.tobytes())
 
