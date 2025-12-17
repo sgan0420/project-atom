@@ -73,7 +73,7 @@ class GestureController:
 
             # Map gestures to animations (intuitive mappings)
             if left_gesture == "fist" and right_gesture == "fist":
-                pose = "taunt"
+                pose = "boxing"
             elif left_gesture == "open" and right_gesture == "open":
                 pose = "dance"
             # Single hand fist = punch that side
@@ -81,6 +81,11 @@ class GestureController:
                 pose = "punch_left"
             elif right_gesture == "fist":
                 pose = "punch_right"
+            # Single hand open = kick that side
+            elif left_gesture == "open":
+                pose = "kick_left"
+            elif right_gesture == "open":
+                pose = "kick_right"
             else:
                 pose = "idle"
 
@@ -128,7 +133,9 @@ class AnimatedRobot(Entity):
             'dance': MODELS_PATH / 'robot-dance.glb',
             'punch_left': MODELS_PATH / 'robot-punch-left.glb',
             'punch_right': MODELS_PATH / 'robot-punch-right.glb',
-            'taunt': MODELS_PATH / 'robot-taunt.glb',
+            'kick_left': MODELS_PATH / 'robot-left-kick.glb',
+            'kick_right': MODELS_PATH / 'robot-right-kick.glb',
+            'boxing': MODELS_PATH / 'robot-boxing.glb',
         }
         self.current_animation = None
         self.current_actor = None
@@ -240,7 +247,7 @@ def main():
 
     gesture_controller = GestureController()
     if gesture_controller.start():
-        status_text.text = 'Fists=Taunt | Palms=Dance | Fist=Punch'
+        status_text.text = '2 Fists=Box | 2 Palms=Dance | 1 Fist=Punch | 1 Palm=Kick'
     else:
         status_text.text = 'Camera error'
         status_text.color = color.red
@@ -270,7 +277,8 @@ def main():
                 gesture_controller.stop()
                 application.quit()
             animations = {'1': 'idle', '2': 'dance', '3': 'punch_left',
-                         '4': 'punch_right', '5': 'taunt'}
+                         '4': 'punch_right', '5': 'kick_left', '6': 'kick_right',
+                         '7': 'boxing'}
             if key in animations:
                 robot.set_animation(animations[key])
                 self.last_animation = animations[key]
