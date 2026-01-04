@@ -301,10 +301,18 @@ class GestureUI:
         self.action_cards = {}
         self.current_action = "idle"
 
+        # Position from left edge of screen
+        # window.aspect_ratio gives width/height, so left edge in UI coords is -aspect_ratio/2
+        # But Ursina UI uses -0.5 to 0.5 for height, and scales width by aspect ratio
+        # So left edge is at x = -window.aspect_ratio * 0.5
+        left_edge = -window.aspect_ratio * 0.5
+        left_margin = 0.02
+        left_x = left_edge + left_margin
+
         # Create title
         self.title = Text(
             text="GESTURE CONTROLS",
-            position=(-0.87, 0.42),
+            position=(left_x, 0.42),
             origin=(-0.5, 0),
             scale=0.6,
             color=UIColors.TEXT_MUTED,
@@ -323,6 +331,9 @@ class GestureUI:
         # Create action cards in a vertical list
         start_y = 0.35
         spacing = 0.068
+        card_center_x = (
+            left_x + 0.095
+        )  # Card width is ~0.19, so center is ~0.095 from left
 
         for i, (action_id, label, hint, accent) in enumerate(actions):
             card = ActionCard(
@@ -330,12 +341,13 @@ class GestureUI:
                 label=label,
                 gesture_hint=hint,
                 accent_color=accent,
-                position=(-0.78, start_y - i * spacing),
+                position=(card_center_x, start_y - i * spacing),
             )
             self.action_cards[action_id] = card
 
-        # Detection status panel
-        self.status_panel = DetectionStatusPanel(position=(-0.71, -0.38))
+        # Detection status panel (panel width is 0.32, center offset is 0.16)
+        panel_center_x = left_x + 0.16
+        self.status_panel = DetectionStatusPanel(position=(panel_center_x, -0.38))
 
     def update(self, action, left_gesture="none", right_gesture="none", confidence=0.0):
         """Update UI state based on current action and gestures."""
